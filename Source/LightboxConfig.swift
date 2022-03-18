@@ -51,11 +51,14 @@ public class LightboxConfig {
     ]
   }
 
-  public struct CloseButton {
-    public static var enabled = true
+  public struct RightButton {
+    public static var enabled = false
+    public static var onPressDismiss = false
     public static var size: CGSize?
-    public static var text = NSLocalizedString("Close", comment: "")
+    public static var text = ""
     public static var image: UIImage?
+    public static var tintColor: UIColor?
+    public static var accessibilityIdentifier: String?
 
     public static var textAttributes: [NSAttributedString.Key: Any] = [
       .font: UIFont.boldSystemFont(ofSize: 16),
@@ -68,11 +71,14 @@ public class LightboxConfig {
     ]
   }
 
-  public struct DeleteButton {
+  public struct LeftButton {
     public static var enabled = false
+    public static var onPressDismiss = false
     public static var size: CGSize?
-    public static var text = NSLocalizedString("Delete", comment: "")
+    public static var text = ""
     public static var image: UIImage?
+    public static var tintColor: UIColor?
+    public static var accessibilityIdentifier: String?
 
     public static var textAttributes: [NSAttributedString.Key: Any] = [
       .font: UIFont.boldSystemFont(ofSize: 16),

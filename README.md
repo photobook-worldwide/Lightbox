@@ -73,6 +73,7 @@ let controller = LightboxController(images: images)
 // Set delegates.
 controller.pageDelegate = self
 controller.dismissalDelegate = self
+controller.buttonDelegate = self
 
 // Use dynamic background.
 controller.dynamicBackground = true
@@ -151,13 +152,14 @@ Configure text, colors, fonts of UI elements by overriding the static
 variables in the **Lightbox** [configuration](https://github.com/hyperoslo/Lightbox/blob/master/Source/LightboxConfig.swift) struct. As an example:
 
 ```swift
-LightboxConfig.CloseButton.image = UIImage(named: ImageList.Lightbox.closeButton)
-LightboxConfig.CloseButton.textAttributes = TextAttributes.Lightbox.closeButton
-LightboxConfig.CloseButton.text = "Finish"
+LightboxConfig.RightButton.image = UIImage(named: ImageList.Lightbox.rightButton)
+LightboxConfig.RightButton.textAttributes = TextAttributes.Lightbox.rightButton
+LightboxConfig.RightButton.text = "Finish"
+LightboxConfig.RightButton.onPressDismiss = true
 
-LightboxConfig.DeleteButton.image = UIImage(named: ImageList.Lightbox.deleteButton)
-LightboxConfig.DeleteButton.textAttributes = TextAttributes.Lightbox.deleteButton
-LightboxConfig.DeleteButton.text = "Delete"
+LightboxConfig.LeftButton.image = UIImage(named: ImageList.Lightbox.leftButton)
+LightboxConfig.LeftButton.textAttributes = TextAttributes.Lightbox.leftButton
+LightboxConfig.LeftButton.text = "Delete"
 
 LightboxConfig.InfoLabel.ellipsisText = "Show more"
 ```

@@ -23,6 +23,11 @@ class ViewController: UIViewController {
     view.addSubview(showButton)
     title = "Lightbox"
     LightboxConfig.preload = 2
+    LightboxConfig.RightButton.enabled = true
+    LightboxConfig.RightButton.image = UIImage(named: "close_icon")
+    LightboxConfig.RightButton.size = CGSize(width: 36, height: 36)
+    LightboxConfig.RightButton.tintColor = .gray
+    LightboxConfig.RightButton.onPressDismiss = true
   }
   
   // MARK: - Action methods
@@ -54,8 +59,18 @@ class ViewController: UIViewController {
         
         let controller = LightboxController(images: images)
         controller.dynamicBackground = true
+        controller.buttonDelegate = self
         
         present(controller, animated: true, completion: nil)
     }
 }
 
+extension ViewController: LightboxControllerButtonDelegate {
+    func lightboxController(_ controller: LightboxController, didPressLeftButton button: UIButton, at index: Int) {
+        print(#function, "index: \(index)")
+    }
+
+    func lightboxController(_ controller: LightboxController, didPressRightButton button: UIButton, at index: Int) {
+        print(#function, "index: \(index)")
+    }
+}

@@ -11,6 +11,12 @@ public protocol LightboxControllerDismissalDelegate: AnyObject {
   func lightboxControllerWillDismiss(_ controller: LightboxController)
 }
 
+public protocol LightboxControllerButtonDelegate: AnyObject {
+
+  func lightboxController(_ controller: LightboxController, didPressLeftButton button: UIButton, at index: Int)
+  func lightboxController(_ controller: LightboxController, didPressRightButton button: UIButton, at index: Int)
+}
+
 public protocol LightboxControllerTouchDelegate: AnyObject {
 
   func lightboxController(_ controller: LightboxController, didTouch image: LightboxImage, at index: Int)
@@ -41,14 +47,14 @@ open class LightboxController: UIViewController {
     let effect = UIBlurEffect(style: .dark)
     let view = UIVisualEffectView(effect: effect)
     view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
+    view.contentMode = .scaleAspectFill
     return view
   }()
 
   lazy var backgroundView: SDAnimatedImageView = {
     let view = SDAnimatedImageView()
     view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
+    view.contentMode = .scaleAspectFill
     return view
   }()
 
@@ -139,6 +145,7 @@ open class LightboxController: UIViewController {
 
   open weak var pageDelegate: LightboxControllerPageDelegate?
   open weak var dismissalDelegate: LightboxControllerDismissalDelegate?
+  open weak var buttonDelegate: LightboxControllerButtonDelegate?
   open weak var imageTouchDelegate: LightboxControllerTouchDelegate?
   open internal(set) var presented = false
   open fileprivate(set) var seen = false
@@ -420,39 +427,26 @@ extension LightboxController: PageViewDelegate {
 
 extension LightboxController: HeaderViewDelegate {
 
-  func headerView(_ headerView: HeaderView, didPressDeleteButton deleteButton: UIButton) {
-    deleteButton.isEnabled = false
-
-    guard numberOfPages != 1 else {
-      pageViews.removeAll()
-      self.headerView(headerView, didPressCloseButton: headerView.closeButton)
-      return
-    }
-
-    let prevIndex = currentPage
-
-    if currentPage == numberOfPages - 1 {
-      previous()
-    } else {
-      next()
-      currentPage -= 1
-    }
-
-    self.initialImages.remove(at: prevIndex)
-    self.pageViews.remove(at: prevIndex).removeFromSuperview()
-
-    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-      self.configureLayout(self.view.bounds.size)
-      self.currentPage = Int(self.scrollView.contentOffset.x / self.view.bounds.width)
-      deleteButton.isEnabled = true
+  func headerView(_ headerView: HeaderView, didPressLeftButton leftButton: UIButton) {
+    buttonDelegate?.lightboxController(self, didPressLeftButton: leftButton, at: currentPage)
+    
+    if LightboxConfig.LeftButton.onPressDismiss {
+      leftButton.isEnabled = false
+      presented = false
+      dismissalDelegate?.lightboxControllerWillDismiss(self)
+      dismiss(animated: true, completion: nil)
     }
   }
 
-  func headerView(_ headerView: HeaderView, didPressCloseButton closeButton: UIButton) {
-    closeButton.isEnabled = false
-    presented = false
-    dismissalDelegate?.lightboxControllerWillDismiss(self)
-    dismiss(animated: true, completion: nil)
+  func headerView(_ headerView: HeaderView, didPressRightButton rightButton: UIButton) {
+    buttonDelegate?.lightboxController(self, didPressRightButton: rightButton, at: currentPage)
+    
+    if LightboxConfig.RightButton.onPressDismiss {
+      rightButton.isEnabled = false
+      presented = false
+      dismissalDelegate?.lightboxControllerWillDismiss(self)
+      dismiss(animated: true, completion: nil)
+    }
   }
 }
 
@@ -463,7 +457,7 @@ extension LightboxController: FooterViewDelegate {
   public func footerView(_ footerView: FooterView, didExpand expanded: Bool) {
     UIView.animate(withDuration: 0.25, animations: {
       self.overlayView.alpha = expanded ? 1.0 : 0.0
-      self.headerView.deleteButton.alpha = expanded ? 0.0 : 1.0
+      self.headerView.leftButton.alpha = expanded ? 0.0 : 1.0
     })
   }
 }
