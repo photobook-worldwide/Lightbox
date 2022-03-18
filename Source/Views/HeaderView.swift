@@ -1,62 +1,74 @@
 import UIKit
 
 protocol HeaderViewDelegate: class {
-  func headerView(_ headerView: HeaderView, didPressDeleteButton deleteButton: UIButton)
-  func headerView(_ headerView: HeaderView, didPressCloseButton closeButton: UIButton)
+  func headerView(_ headerView: HeaderView, didPressLeftButton leftButton: UIButton)
+  func headerView(_ headerView: HeaderView, didPressRightButton rightButton: UIButton)
 }
 
 open class HeaderView: UIView {
-  open fileprivate(set) lazy var closeButton: UIButton = { [unowned self] in
+  open fileprivate(set) lazy var rightButton: UIButton = { [unowned self] in
     let title = NSAttributedString(
-      string: LightboxConfig.CloseButton.text,
-      attributes: LightboxConfig.CloseButton.textAttributes)
+      string: LightboxConfig.RightButton.text,
+      attributes: LightboxConfig.RightButton.textAttributes)
 
-    let button = UIButton(type: .system)
-
-    button.setAttributedTitle(title, for: UIControl.State())
-
-    if let size = LightboxConfig.CloseButton.size {
-      button.frame.size = size
-    } else {
-      button.sizeToFit()
+    var button = UIButton(type: .system)
+    
+    if let image = LightboxConfig.RightButton.image {
+      button = UIButton(type: .custom)
+      button.setBackgroundImage(image, for: .normal)
     }
-
-    button.addTarget(self, action: #selector(closeButtonDidPress(_:)),
-      for: .touchUpInside)
-
-    if let image = LightboxConfig.CloseButton.image {
-        button.setBackgroundImage(image, for: UIControl.State())
-    }
-
-    button.isHidden = !LightboxConfig.CloseButton.enabled
-
-    return button
-  }()
-
-  open fileprivate(set) lazy var deleteButton: UIButton = { [unowned self] in
-    let title = NSAttributedString(
-      string: LightboxConfig.DeleteButton.text,
-      attributes: LightboxConfig.DeleteButton.textAttributes)
-
-    let button = UIButton(type: .system)
 
     button.setAttributedTitle(title, for: .normal)
 
-    if let size = LightboxConfig.DeleteButton.size {
+    if let size = LightboxConfig.RightButton.size {
       button.frame.size = size
     } else {
       button.sizeToFit()
     }
 
-    button.addTarget(self, action: #selector(deleteButtonDidPress(_:)),
+    button.addTarget(self, action: #selector(rightButtonDidPress(_:)),
       for: .touchUpInside)
-
-    if let image = LightboxConfig.DeleteButton.image {
-        button.setBackgroundImage(image, for: UIControl.State())
+    
+    if let tintColor = LightboxConfig.RightButton.tintColor {
+      button.tintColor = tintColor
     }
 
-    button.isHidden = !LightboxConfig.DeleteButton.enabled
+    button.isHidden = !LightboxConfig.RightButton.enabled
+    button.accessibilityIdentifier = LightboxConfig.RightButton.accessibilityIdentifier
+    
+    return button
+  }()
 
+  open fileprivate(set) lazy var leftButton: UIButton = { [unowned self] in
+    let title = NSAttributedString(
+      string: LightboxConfig.LeftButton.text,
+      attributes: LightboxConfig.LeftButton.textAttributes)
+
+    var button = UIButton(type: .system)
+    
+    if let image = LightboxConfig.LeftButton.image {
+      button = UIButton(type: .custom)
+      button.setBackgroundImage(image, for: .normal)
+    }
+    
+    button.setAttributedTitle(title, for: .normal)
+    
+    if let size = LightboxConfig.LeftButton.size {
+      button.frame.size = size
+    } else {
+      button.sizeToFit()
+    }
+
+    button.addTarget(self, action: #selector(leftButtonDidPress(_:)),
+      for: .touchUpInside)
+    
+    if let tintColor = LightboxConfig.LeftButton.tintColor {
+      button.tintColor = tintColor
+    }
+
+    button.isHidden = !LightboxConfig.LeftButton.enabled
+    button.accessibilityIdentifier = LightboxConfig.LeftButton.accessibilityIdentifier
+    
     return button
   }()
 
@@ -69,7 +81,7 @@ open class HeaderView: UIView {
 
     backgroundColor = UIColor.clear
 
-    [closeButton, deleteButton].forEach { addSubview($0) }
+    [rightButton, leftButton].forEach { addSubview($0) }
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -78,12 +90,12 @@ open class HeaderView: UIView {
 
   // MARK: - Actions
 
-  @objc func deleteButtonDidPress(_ button: UIButton) {
-    delegate?.headerView(self, didPressDeleteButton: button)
+  @objc func leftButtonDidPress(_ button: UIButton) {
+    delegate?.headerView(self, didPressLeftButton: button)
   }
 
-  @objc func closeButtonDidPress(_ button: UIButton) {
-    delegate?.headerView(self, didPressCloseButton: button)
+  @objc func rightButtonDidPress(_ button: UIButton) {
+    delegate?.headerView(self, didPressRightButton: button)
   }
 }
 
@@ -100,12 +112,12 @@ extension HeaderView: LayoutConfigurable {
       topPadding = 0
     }
 
-    closeButton.frame.origin = CGPoint(
-      x: bounds.width - closeButton.frame.width - 17,
+    rightButton.frame.origin = CGPoint(
+      x: bounds.width - rightButton.frame.width - 17,
       y: topPadding
     )
 
-    deleteButton.frame.origin = CGPoint(
+    leftButton.frame.origin = CGPoint(
       x: 17,
       y: topPadding
     )

@@ -140,9 +140,9 @@
 				D523B0AA1C43AA2A001AD1EC /* Products */,
 				D2A58F5C1F7943A30064F14E /* Frameworks */,
 			);
-			indentWidth = 4;
+			indentWidth = 2;
 			sourceTree = "<group>";
-			tabWidth = 4;
+			tabWidth = 2;
 		};
 		D523B0AA1C43AA2A001AD1EC /* Products */ = {
 			isa = PBXGroup;
